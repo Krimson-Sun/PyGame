@@ -43,6 +43,25 @@ class Board:
                                   self.cell_size, self.cell_size], 1)
 
 
+class Menu:
+    pass
+
+
+class Character:
+    pass
+
+
+class Enemy:
+    pass
+
+
+class Shop:
+    pass
+
+
+class Snowball:
+    pass
+
 if __name__ == '__main__':
     pygame.init()
     size = 500, 700
