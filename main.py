@@ -1,7 +1,8 @@
 import os
 import sys
-
 import pygame
+
+FPS = 50
 
 
 def load_image(name, colorkey=None):
@@ -85,6 +86,14 @@ class Character(pygame.sprite.Sprite):
         self.coords = self.rect.x, self.rect.y = 75, 775
         self.mask = pygame.mask.from_surface(self.image)
 
+    def move(self):
+        pass
+
+    def get_coords(self):
+        return self.coords
+
+    def shoot(self):
+        self.snowball = Snowball(snows_group)
 
 class Enemy:
     pass
@@ -94,8 +103,19 @@ class Shop:
     pass
 
 
-class Snowball:
-    pass
+class Snowball(pygame.sprite.Sprite):
+    global character
+
+    def __init__(self, *group):
+        super().__init__(*group)
+        self.image = load_image('snow.jpg', -1)
+        self.rect = self.image.get_rect()
+        self.coords = self.rect.x, self.rect.y = character.get_coords()[0] + 15, 700
+        self.mask = pygame.mask.from_surface(self.image)
+        self.fly()
+
+    def fly(self):
+        self.rect = self.rect.move(0, 1)
 
 
 pygame.init()
@@ -106,23 +126,33 @@ img = load_image('xmas.jpg')
 img = pygame.transform.scale(img, size)
 screen.blit(img, (0, 0))
 menu = Menu()
+clock = pygame.time.Clock()
+for event in pygame.event.get():
+    if event.type == pygame.QUIT:
+        quit(0)
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_RETURN:
+            break
 board = Board(12, 12)
 character_sprites = pygame.sprite.Group()
 character = Character(character_sprites)
+snows_group = pygame.sprite.Group()
 board.set_view(25, 220, 50)
 pygame.mouse.set_visible(True)
 running = True
-f = False
 while running:
+    screen.blit(img, (0, 0))
+    board.render(screen)
+    character_sprites.draw(screen)
+    snows_group.draw(screen)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                f = True
-    if f:
-        screen.blit(img, (0, 0))
-        board.render(screen)
-        character_sprites.draw(screen)
-    pygame.display.flip()
+            if event.key == pygame.K_SPACE:
+                character.shoot()
+            if event.type == pygame.QUIT:
+                running = False
+        pygame.display.flip()
+        clock.tick(FPS)
 pygame.quit()
