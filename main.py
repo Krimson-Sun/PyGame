@@ -127,12 +127,14 @@ img = pygame.transform.scale(img, size)
 screen.blit(img, (0, 0))
 menu = Menu()
 clock = pygame.time.Clock()
-for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-        quit(0)
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_RETURN:
-            break
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quit(0)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                running = False
 board = Board(12, 12)
 character_sprites = pygame.sprite.Group()
 character = Character(character_sprites)
