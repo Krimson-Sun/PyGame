@@ -2,7 +2,10 @@ import os
 import sys
 import pygame
 
-FPS = 50
+pygame.init()
+SIZE = WIDTH, HEIGHT = 650, 850
+FPS = 60
+screen = pygame.display.set_mode(SIZE)
 
 
 def load_image(name, colorkey=None):
@@ -36,7 +39,8 @@ class Board:
         self.cell_size = cell_size
 
     def render(self, screen):
-        pygame.draw.rect(screen, (153, 153, 255), [self.left, self.top, self.cell_size * 12, self.cell_size * 12], 0)
+        pygame.draw.rect(screen, (153, 153, 255),
+                         [self.left, self.top, self.cell_size * 12, self.cell_size * 12], 0)
         for i in range(self.width):
             for j in range(self.height):
                 pygame.draw.rect(screen, pygame.Color(255, 255, 255),
@@ -50,30 +54,30 @@ class Menu:
         font1 = pygame.font.Font(None, 30)
         font2 = pygame.font.Font(None, 60)
         text1 = font2.render('Save Xmas', True, (179, 222, 255))
-        text_x1 = width // 2 - text1.get_width() // 2
-        text_y1 = height // 7 - text1.get_height() // 2
+        text_x1 = WIDTH // 2 - text1.get_width() // 2
+        text_y1 = HEIGHT // 7 - text1.get_height() // 2
         text2 = font1.render("Добро пожаловать в игру «Спаси Рождество»", True, (255, 255, 255))
-        text_x2 = width // 2 - text2.get_width() // 2
-        text_y2 = height // 5 - text2.get_height() // 2
+        text_x2 = WIDTH // 2 - text2.get_width() // 2
+        text_y2 = HEIGHT // 5 - text2.get_height() // 2
         screen.blit(text2, (text_x2, text_y2))
         screen.blit(text1, (text_x1, text_y1))
         text2 = font1.render("Гринч - похититель Рождества.", True, (255, 255, 255))
-        text_x2 = width // 2 - text2.get_width() // 2
-        text_y2 = height // 4 - text2.get_height() // 2
+        text_x2 = WIDTH // 2 - text2.get_width() // 2
+        text_y2 = HEIGHT // 4 - text2.get_height() // 2
         screen.blit(text2, (text_x2, text_y2))
         text2 = font1.render("Он пробрался к Санте на завод игрушек и хочет все сломать.", True,
                              (255, 255, 255))
-        text_x2 = width // 2 - text2.get_width() // 2
-        text_y2 = height // 3.4 - text2.get_height() // 2
+        text_x2 = WIDTH // 2 - text2.get_width() // 2
+        text_y2 = HEIGHT // 3.4 - text2.get_height() // 2
         screen.blit(text2, (text_x2, text_y2))
         text2 = font1.render("Ваша задача отбиваться от Гринча снежками. Желаем удачи!", True,
                              (255, 255, 255))
-        text_x2 = width // 2 - text2.get_width() // 2
-        text_y2 = height // 2.9 - text2.get_height() // 2
+        text_x2 = WIDTH // 2 - text2.get_width() // 2
+        text_y2 = HEIGHT // 2.9 - text2.get_height() // 2
         screen.blit(text2, (text_x2, text_y2))
         text2 = font1.render("Чтобы начать игру нажмите Enter", True, (255, 255, 255))
-        text_x2 = width // 2 - text2.get_width() // 2
-        text_y2 = height // 2 - text2.get_height() // 2
+        text_x2 = WIDTH // 2 - text2.get_width() // 2
+        text_y2 = HEIGHT // 2 - text2.get_height() // 2
         screen.blit(text2, (text_x2, text_y2))
         pygame.display.flip()
 
@@ -83,17 +87,24 @@ class Character(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = load_image("character.jpg", -1)
         self.rect = self.image.get_rect()
-        self.coords = self.rect.x, self.rect.y = 75, 775
+        self.rect.x, self.rect.y = 25, 775
         self.mask = pygame.mask.from_surface(self.image)
+        self.snowballs = []
 
-    def move(self):
-        pass
+    def move(self, d):
+        if d == 'left':
+            if self.rect.x > 25:
+                self.rect.x -= 50
+        else:
+            if self.rect.x < 575:
+                self.rect.x += 50
 
     def get_coords(self):
-        return self.coords
+        return self.rect.x, self.rect.y
 
     def shoot(self):
-        self.snowball = Snowball(snows_group)
+        self.snowballs.append(Snowball(snows_group))
+
 
 class Enemy:
     pass
@@ -109,21 +120,20 @@ class Snowball(pygame.sprite.Sprite):
     def __init__(self, *group):
         super().__init__(*group)
         self.image = load_image('snow.jpg', -1)
+        self.image = pygame.transform.scale(self.image, (30, 30))
         self.rect = self.image.get_rect()
-        self.coords = self.rect.x, self.rect.y = character.get_coords()[0] + 15, 700
+        self.coords = self.rect.x, self.rect.y = character.get_coords()[0] + 10, \
+                                                 character.get_coords()[1] - 30
         self.mask = pygame.mask.from_surface(self.image)
-        self.fly()
+        self.v = 50
 
     def fly(self):
-        self.rect = self.rect.move(0, 1)
+        self.rect.center = self.rect.center[0], self.rect.center[1] - self.v / FPS
 
 
-pygame.init()
-size = width, height = 650, 850
-screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Save Xmas")
 img = load_image('xmas.jpg')
-img = pygame.transform.scale(img, size)
+img = pygame.transform.scale(img, SIZE)
 screen.blit(img, (0, 0))
 menu = Menu()
 clock = pygame.time.Clock()
@@ -155,6 +165,14 @@ while running:
                 character.shoot()
             if event.type == pygame.QUIT:
                 running = False
-        pygame.display.flip()
-        clock.tick(FPS)
+            if event.key == pygame.K_LEFT:
+                character.move('left')
+            if event.key == pygame.K_RIGHT:
+                character.move('right')
+    for i in character.snowballs:
+        i.fly()
+        if i.rect.topleft[1] < 220:
+            i.kill()
+    pygame.display.flip()
+    clock.tick(FPS)
 pygame.quit()
