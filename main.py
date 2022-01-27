@@ -1,6 +1,7 @@
 import os
 import sys
 import pygame
+import random
 
 pygame.init()
 SIZE = WIDTH, HEIGHT = 650, 850
@@ -119,7 +120,7 @@ class Snowball(pygame.sprite.Sprite):
 
     def __init__(self, *group):
         super().__init__(*group)
-        self.image = load_image('snow.jpg', -1)
+        self.image = load_image('snow1.jpg', -1)
         self.image = pygame.transform.scale(self.image, (30, 30))
         self.rect = self.image.get_rect()
         self.coords = self.rect.x, self.rect.y = character.get_coords()[0] + 10, \
@@ -127,7 +128,7 @@ class Snowball(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.v = 50
 
-    def fly(self):
+    def move(self):
         self.rect.center = self.rect.center[0], self.rect.center[1] - self.v / FPS
 
 
@@ -170,7 +171,7 @@ while running:
             if event.key == pygame.K_RIGHT:
                 character.move('right')
     for i in character.snowballs:
-        i.fly()
+        i.move()
         if i.rect.topleft[1] < 220:
             i.kill()
     pygame.display.flip()
