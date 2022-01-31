@@ -107,8 +107,14 @@ class Character(pygame.sprite.Sprite):
         self.snowballs.append(Snowball(snows_group))
 
 
-class Enemy:
-    pass
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = load_image("grinch.jpg", -1)
+        self.image = pygame.transform.scale(self.image, (45, 45))
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = 78, 223
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class Shop:
@@ -149,6 +155,8 @@ while running:
 board = Board(12, 12)
 character_sprites = pygame.sprite.Group()
 character = Character(character_sprites)
+enemy_sprites = pygame.sprite.Group()
+enemy = Enemy(enemy_sprites)
 snows_group = pygame.sprite.Group()
 board.set_view(25, 220, 50)
 pygame.mouse.set_visible(True)
@@ -158,6 +166,7 @@ while running:
     board.render(screen)
     character_sprites.draw(screen)
     snows_group.draw(screen)
+    enemy_sprites.draw(screen)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
